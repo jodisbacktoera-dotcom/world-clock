@@ -15,7 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WorldClock">
 
-        <!-- Launcher Activity (Clock) -->
         <activity
             android:name=".ClockActivity"
             android:exported="true">
@@ -25,7 +24,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Hidden Activities -->
         <activity
             android:name=".PinLockActivity"
             android:exported="false" />
