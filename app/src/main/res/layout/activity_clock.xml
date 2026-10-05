@@ -30,12 +30,13 @@
             android:layout_marginTop="8dp"/>
     </LinearLayout>
 
+    <!-- Yeh hai chhupa hua area (Bottom Right Corner) -->
     <View
         android:id="@+id/hiddenArea"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="20dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true"/>
