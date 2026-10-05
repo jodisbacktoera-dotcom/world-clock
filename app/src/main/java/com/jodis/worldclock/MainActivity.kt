@@ -20,17 +20,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Header me display name daalo
         val headerName = findViewById<TextView>(R.id.headerName)
         headerName.text = UserData.getDisplayName(this)
 
-        // Dummy chat list (baad me asli aayegi)
+        // Dummy data testing ke liye (phone number apna daal sakte ho)
         if (MessageStore.chats.isEmpty()) {
             MessageStore.chats.addAll(
                 listOf(
-                    Chat("rahul_123", "Rahul Sharma", "Bhai kal milte hain", "10:45", 2),
-                    Chat("priya_07", "Priya Verma", "Okay done", "09:20", 0),
-                    Chat("amit_k", "Amit Kumar", "Photo bhej dena", "Yesterday", 1)
+                    Chat("rahul_123", "Rahul Sharma", "9876543210", "Bhai kal milte hain", "10:45", 2),
+                    Chat("priya_07", "Priya Verma", "9876543211", "Okay done", "09:20", 0),
+                    Chat("amit_k", "Amit Kumar", "9876543212", "Photo bhej dena", "Yesterday", 1)
                 )
             )
         }
@@ -38,16 +37,17 @@ class MainActivity : AppCompatActivity() {
         val chatList = findViewById<RecyclerView>(R.id.chatList)
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = ChatAdapter(MessageStore.chats) { chat ->
-            Toast.makeText(this, "Chat khulega: ${chat.displayName}", Toast.LENGTH_SHORT).show()
+            // Chat par tap → ChatActivity kholo
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra("chatId", chat.chatId)
+            intent.putExtra("chatName", chat.displayName)
+            intent.putExtra("chatPhone", chat.phone)
+            startActivity(intent)
         }
 
-        // SMS Banner setup
         val smsBanner = findViewById<LinearLayout>(R.id.smsBanner)
-        smsBanner.setOnClickListener {
-            requestSmsRole()
-        }
+        smsBanner.setOnClickListener { requestSmsRole() }
 
-        // Check karo app default SMS app hai ya nahi
         updateBanner()
     }
 
