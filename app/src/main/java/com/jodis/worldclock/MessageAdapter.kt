@@ -32,11 +32,11 @@ class MessageAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_RIGHT) {
             val v = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_bubble_right, parent, false)
+                .inflate(R.layout.bubble_r, parent, false)
             RightViewHolder(v)
         } else {
             val v = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_bubble_left, parent, false)
+                .inflate(R.layout.bubble_l, parent, false)
             LeftViewHolder(v)
         }
     }
