@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="chat_bg">#0B141A</color>
+    <color name="header_bg">#1F2C34</color>
+    <color name="row_bg">#111B21</color>
+    <color name="bubble_sent">#005C4B</color>
+    <color name="bubble_received">#202C33</color>
+    <color name="text_primary">#E9EDEF</color>
+    <color name="text_secondary">#8696A0</color>
+    <color name="accent_green">#00A884</color>
+    <color name="input_bg">#1F2C34</color>
 </resources>
