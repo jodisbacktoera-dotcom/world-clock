@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/input_bg"
-            android:hint="Satyarth Raj"
+            android:hint="enter name "
             android:textColorHint="@color/text_secondary"
             android:textColor="@color/text_primary"
             android:padding="14dp"
@@ -98,7 +98,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Phone Number (sirf SMS ke liye)"
+            android:text="Phone Number"
             android:textColor="@color/accent_green"
             android:textSize="13sp"
             android:layout_marginBottom="4dp"/>
@@ -119,7 +119,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🔒 Yeh number kabhi kisi ko nahi dikhega"
+            android:text="number only verification ke liye hai "
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
             android:layout_marginBottom="20dp"/>
