@@ -2,6 +2,7 @@ package com.jodis.worldclock
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -17,8 +18,8 @@ class PinLockActivity : AppCompatActivity() {
         setContentView(R.layout.activity_pin_lock)
 
         window.setFlags(
-            android.view.WindowManager.LayoutParams.FLAG_SECURE,
-            android.view.WindowManager.LayoutParams.FLAG_SECURE
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
         )
 
         dotsText = findViewById(R.id.dotsText)
@@ -55,8 +56,8 @@ class PinLockActivity : AppCompatActivity() {
     }
 
     private fun verifyPin() {
-        // Default PIN abhi 1234 hai
-        if (enteredPin == "1234") {
+        // Saved PIN se match karo
+        if (UserData.verifyPin(this, enteredPin)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         } else {
