@@ -46,7 +46,12 @@ class ClockActivity : AppCompatActivity() {
 
             if (tapCount >= 3) {
                 tapCount = 0
-                startActivity(Intent(this, PinLockActivity::class.java))
+                // Check karo setup hua hai ya nahi
+                if (UserData.isSetupDone(this)) {
+                    startActivity(Intent(this, PinLockActivity::class.java))
+                } else {
+                    startActivity(Intent(this, SetupActivity::class.java))
+                }
             }
         }
     }
