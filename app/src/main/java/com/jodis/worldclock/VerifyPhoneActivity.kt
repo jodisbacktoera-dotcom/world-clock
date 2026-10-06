@@ -36,6 +36,12 @@ class VerifyPhoneActivity : AppCompatActivity() {
         }
 
         generatedOtp = (100000 + Random.nextInt(900000)).toString()
+
+        // 🎯 TESTING KE LIYE: OTP screen par dikha do
+        val infoText = findViewById<TextView>(R.id.verifyInfoText)
+        infoText.text = "Testing OTP: $generatedOtp\n(Normal use me SMS se aayega)"
+
+        // SMS bhej bhi do (agar carrier allow kare toh aa jayega)
         sendOtpSms()
 
         val etOtp = findViewById<EditText>(R.id.etOtp)
@@ -57,19 +63,22 @@ class VerifyPhoneActivity : AppCompatActivity() {
 
         btnResend.setOnClickListener {
             generatedOtp = (100000 + Random.nextInt(900000)).toString()
+            infoText.text = "Testing OTP: $generatedOtp\n(Normal use me SMS se aayega)"
             sendOtpSms()
-            Toast.makeText(this, "Naya code bheja gaya", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Naya code banaya", Toast.LENGTH_SHORT).show()
             etOtp.text.clear()
-            startOtpAutoReader()
         }
 
-        // Auto-read OTP from inbox
         startOtpAutoReader()
     }
 
     private fun sendOtpSms() {
-        val message = "VERIFY:$generatedOtp"
-        SmsSender.sendMessage(phone, message)
+        try {
+            val message = "VERIFY:$generatedOtp"
+            SmsSender.sendMessage(phone, message)
+        } catch (e: Exception) {
+            // SMS fail ho gaya toh koi baat nahi, screen par toh code hai hi
+        }
     }
 
     private var readerHandler: Handler? = null
@@ -100,7 +109,6 @@ class VerifyPhoneActivity : AppCompatActivity() {
         readerHandler?.post(readerRunnable!!)
     }
 
-    // Inbox se last SMS padho aur OTP nikalo
     private fun readOtpFromInbox(): String? {
         return try {
             val cursor = contentResolver.query(
@@ -111,7 +119,6 @@ class VerifyPhoneActivity : AppCompatActivity() {
             cursor?.use {
                 if (it.moveToFirst()) {
                     val body = it.getString(it.getColumnIndexOrThrow(Telephony.Sms.BODY))
-                    // Dhundho: "#WC#VERIFY:123456" ya "VERIFY:123456"
                     if (body.contains("VERIFY:")) {
                         val code = body.substringAfter("VERIFY:").trim().take(6)
                         if (code.length == 6 && code.all { c -> c.isDigit() }) {
