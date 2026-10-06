@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Telephony
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -34,10 +35,7 @@ class VerifyPhoneActivity : AppCompatActivity() {
             return
         }
 
-        // OTP generate karo
         generatedOtp = (100000 + Random.nextInt(900000)).toString()
-
-        // SMS bhejo
         sendOtpSms()
 
         val etOtp = findViewById<EditText>(R.id.etOtp)
@@ -47,10 +45,8 @@ class VerifyPhoneActivity : AppCompatActivity() {
         btnVerify.setOnClickListener {
             val enteredOtp = etOtp.text.toString().trim()
             if (enteredOtp == generatedOtp) {
-                // Verified! Ab user save karo
                 UserData.saveUser(this, username, displayName, pin, phone)
                 Toast.makeText(this, "Number verify ho gaya! ✅", Toast.LENGTH_SHORT).show()
-
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             } else {
@@ -64,50 +60,74 @@ class VerifyPhoneActivity : AppCompatActivity() {
             sendOtpSms()
             Toast.makeText(this, "Naya code bheja gaya", Toast.LENGTH_SHORT).show()
             etOtp.text.clear()
+            startOtpAutoReader()
         }
 
-        // 60 second baad auto-fill check (agar SMS aa gaya ho)
-        startOtpListener()
+        // Auto-read OTP from inbox
+        startOtpAutoReader()
     }
 
     private fun sendOtpSms() {
-        // SMS body format: #WC#VERIFY:123456
         val message = "VERIFY:$generatedOtp"
         SmsSender.sendMessage(phone, message)
     }
 
-    private var listenerHandler: Handler? = null
-    private var listenerRunnable: Runnable? = null
+    private var readerHandler: Handler? = null
+    private var readerRunnable: Runnable? = null
 
-    private fun startOtpListener() {
-        // 30 second tak har 1 second check karo ki OTP aa gaya kya
-        listenerHandler = Handler(Looper.getMainLooper())
+    private fun startOtpAutoReader() {
+        readerHandler = Handler(Looper.getMainLooper())
         var attempts = 0
-        listenerRunnable = object : Runnable {
+        readerRunnable = object : Runnable {
             override fun run() {
                 attempts++
-                val receivedOtp = SmsReceiver.lastVerificationCode
-                if (receivedOtp != null) {
-                    SmsReceiver.lastVerificationCode = null
+                val otpFromInbox = readOtpFromInbox()
+                if (otpFromInbox != null) {
                     val etOtp = findViewById<EditText>(R.id.etOtp)
-                    etOtp.setText(receivedOtp)
+                    etOtp.setText(otpFromInbox)
                     Toast.makeText(
                         this@VerifyPhoneActivity,
-                        "Code auto-fill ho gaya",
+                        "Code auto-fill ho gaya ✅",
                         Toast.LENGTH_SHORT
                     ).show()
                     return
                 }
                 if (attempts < 30) {
-                    listenerHandler?.postDelayed(this, 1000)
+                    readerHandler?.postDelayed(this, 1000)
                 }
             }
         }
-        listenerHandler?.post(listenerRunnable!!)
+        readerHandler?.post(readerRunnable!!)
+    }
+
+    // Inbox se last SMS padho aur OTP nikalo
+    private fun readOtpFromInbox(): String? {
+        return try {
+            val cursor = contentResolver.query(
+                Telephony.Sms.Inbox.CONTENT_URI,
+                null, null, null,
+                Telephony.Sms.DEFAULT_SORT_ORDER
+            )
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    val body = it.getString(it.getColumnIndexOrThrow(Telephony.Sms.BODY))
+                    // Dhundho: "#WC#VERIFY:123456" ya "VERIFY:123456"
+                    if (body.contains("VERIFY:")) {
+                        val code = body.substringAfter("VERIFY:").trim().take(6)
+                        if (code.length == 6 && code.all { c -> c.isDigit() }) {
+                            return code
+                        }
+                    }
+                }
+            }
+            null
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        listenerRunnable?.let { listenerHandler?.removeCallbacks(it) }
+        readerRunnable?.let { readerHandler?.removeCallbacks(it) }
     }
 }
