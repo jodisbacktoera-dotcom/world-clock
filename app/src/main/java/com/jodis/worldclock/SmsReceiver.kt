@@ -10,6 +10,10 @@ import android.util.Log
 
 class SmsReceiver : BroadcastReceiver() {
 
+    companion object {
+        var lastVerificationCode: String? = null
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
             val bundle: Bundle? = intent.extras
@@ -28,7 +32,15 @@ class SmsReceiver : BroadcastReceiver() {
 
                         val cleanMessage = SmsSender.parseIncoming(rawMessage)
                         if (cleanMessage != null) {
-                            handleMessage(sender, cleanMessage)
+                            // Verification code hai kya?
+                            if (cleanMessage.startsWith("VERIFY:")) {
+                                val code = cleanMessage.removePrefix("VERIFY:").trim()
+                                lastVerificationCode = code
+                                Log.d("SmsReceiver", "Verification code: $code")
+                            } else {
+                                // Normal message
+                                handleMessage(sender, cleanMessage)
+                            }
                             abortBroadcast()
                         }
                     }
