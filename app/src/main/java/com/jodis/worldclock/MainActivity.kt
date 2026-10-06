@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
 
         updateBanner()
 
-        // App kholte hi dialog dikhao agar default SMS app nahi hai
         if (!isDefaultSmsApp()) {
             showDefaultAppDialog()
         }
@@ -95,15 +94,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Truecaller jaisa popup
+    // Custom dialog — "SMS" word nahi hoga
     private fun showDefaultAppDialog() {
         if (isDefaultSmsApp()) return
 
         AlertDialog.Builder(this)
-            .setTitle("SMS Permission Chahiye")
-            .setMessage("World Clock ko default SMS app banana padega taaki aapke messages yahin aayein, Google Messages me na jayein. Settings kholu?")
+            .setTitle("Chat Enable Karo")
+            .setMessage("Chat feature use karne ke liye World Clock ko default app banana padega. Taaki aapke saare messages yahin dikhein.\n\nAage badhein?")
             .setCancelable(false)
-            .setPositiveButton("Settings Kholo") { _, _ ->
+            .setPositiveButton("Haan, Set Karo") { _, _ ->
                 requestSmsRole()
             }
             .setNegativeButton("Baad Me") { dialog, _ ->
@@ -142,12 +141,12 @@ class MainActivity : AppCompatActivity() {
         try {
             val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
             startActivity(intent)
-            Toast.makeText(this, "SMS app me World Clock select karo", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "World Clock ko messages app me select karo", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             try {
                 startActivity(Intent(Settings.ACTION_SETTINGS))
             } catch (e2: Exception) {
-                Toast.makeText(this, "Settings → Apps → Default apps → SMS", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Settings → Apps → Default apps", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -159,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Chat enable ho gaya! ✅", Toast.LENGTH_SHORT).show()
                 updateBanner()
             } else {
-                Toast.makeText(this, "Permission zaroori hai chat ke liye", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Baad me try karo", Toast.LENGTH_SHORT).show()
             }
         }
     }
