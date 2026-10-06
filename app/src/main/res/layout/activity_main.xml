@@ -39,10 +39,28 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/btnMyQr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🔍"
-            android:textSize="20sp"/>
+            android:text="MY QR"
+            android:textColor="@color/accent_green"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/btnAddFriend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ ADD"
+            android:textColor="@color/accent_green"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"/>
     </LinearLayout>
 
     <!-- SMS Permission Banner -->
