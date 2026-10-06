@@ -24,24 +24,13 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".PinLockActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SetupActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ChatActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MyQrActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AddFriendActivity"
-            android:exported="false" />
+        <activity android:name=".PinLockActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".SetupActivity" android:exported="false" />
+        <activity android:name=".ChatActivity" android:exported="false" />
+        <activity android:name=".MyQrActivity" android:exported="false" />
+        <activity android:name=".AddFriendActivity" android:exported="false" />
+        <activity android:name=".VerifyPhoneActivity" android:exported="false" />
 
         <receiver
             android:name=".SmsReceiver"
