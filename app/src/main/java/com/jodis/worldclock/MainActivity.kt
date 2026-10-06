@@ -4,6 +4,7 @@ import android.app.role.RoleManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.provider.Telephony
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         val headerName = findViewById<TextView>(R.id.headerName)
         headerName.text = UserData.getDisplayName(this)
 
-        // Dummy data testing ke liye
         if (MessageStore.chats.isEmpty()) {
             MessageStore.chats.addAll(
                 listOf(
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         updateBanner()
 
-        // ⚡ App kholte hi automatically permission maango
+        // App kholte hi maango
         if (!isDefaultSmsApp()) {
             requestSmsRole()
         }
@@ -83,14 +83,46 @@ class MainActivity : AppCompatActivity() {
             val roleManager = getSystemService(RoleManager::class.java)
             if (roleManager != null && roleManager.isRoleAvailable(RoleManager.ROLE_SMS)) {
                 if (!roleManager.isRoleHeld(RoleManager.ROLE_SMS)) {
-                    val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
-                    startActivityForResult(intent, SMS_ROLE_CODE)
+                    try {
+                        val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                        startActivityForResult(intent, SMS_ROLE_CODE)
+                    } catch (e: Exception) {
+                        // Agar RoleManager fail ho jaye toh Settings kholo
+                        openDefaultAppsSettings()
+                    }
                 }
+            } else {
+                openDefaultAppsSettings()
             }
         } else {
-            val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+            try {
+                val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+                startActivity(intent)
+            } catch (e: Exception) {
+                openDefaultAppsSettings()
+            }
+        }
+    }
+
+    // Direct Settings kholo — 100% kaam karega
+    private fun openDefaultAppsSettings() {
+        try {
+            val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
             startActivity(intent)
+            Toast.makeText(
+                this,
+                "World Clock ko SMS app me set karo",
+                Toast.LENGTH_LONG
+            ).show()
+        } catch (e: Exception) {
+            // Aur bhi fallback
+            try {
+                val intent = Intent(Settings.ACTION_SETTINGS)
+                startActivity(intent)
+            } catch (e2: Exception) {
+                Toast.makeText(this, "Settings manually kholo → Apps → Default apps → SMS", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
