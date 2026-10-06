@@ -25,7 +25,6 @@ class SetupActivity : AppCompatActivity() {
             val pin = etPin.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
-            // Validation
             if (username.length < 3) {
                 Toast.makeText(this, "Username 3+ characters ka hona chahiye", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -47,13 +46,13 @@ class SetupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Save karo
-            UserData.saveUser(this, username, displayName, pin, phone)
-
-            Toast.makeText(this, "Setup complete! ✅", Toast.LENGTH_SHORT).show()
-
-            // MainActivity kholo
-            startActivity(Intent(this, MainActivity::class.java))
+            // Ab VerifyPhoneActivity kholo
+            val intent = Intent(this, VerifyPhoneActivity::class.java)
+            intent.putExtra("username", username)
+            intent.putExtra("displayName", displayName)
+            intent.putExtra("pin", pin)
+            intent.putExtra("phone", phone)
+            startActivity(intent)
             finish()
         }
     }
