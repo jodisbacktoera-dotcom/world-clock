@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         val headerName = findViewById<TextView>(R.id.headerName)
         headerName.text = UserData.getDisplayName(this)
 
-        // Dummy data testing ke liye (phone number apna daal sakte ho)
+        // Dummy data testing ke liye
         if (MessageStore.chats.isEmpty()) {
             MessageStore.chats.addAll(
                 listOf(
@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         val chatList = findViewById<RecyclerView>(R.id.chatList)
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = ChatAdapter(MessageStore.chats) { chat ->
-            // Chat par tap → ChatActivity kholo
             val intent = Intent(this, ChatActivity::class.java)
             intent.putExtra("chatId", chat.chatId)
             intent.putExtra("chatName", chat.displayName)
@@ -49,6 +48,11 @@ class MainActivity : AppCompatActivity() {
         smsBanner.setOnClickListener { requestSmsRole() }
 
         updateBanner()
+
+        // ⚡ App kholte hi automatically permission maango
+        if (!isDefaultSmsApp()) {
+            requestSmsRole()
+        }
     }
 
     override fun onResume() {
@@ -97,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Chat enable ho gaya! ✅", Toast.LENGTH_SHORT).show()
                 updateBanner()
             } else {
-                Toast.makeText(this, "Permission deny kiya", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Permission zaroori hai chat ke liye", Toast.LENGTH_SHORT).show()
             }
         }
     }
