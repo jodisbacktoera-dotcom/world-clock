@@ -21,10 +21,43 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Header name
         val headerName = findViewById<TextView>(R.id.headerName)
         headerName.text = UserData.getDisplayName(this)
 
-        if (MessageStore.chats.isEmpty()) {
+        // Buttons
+        findViewById<TextView>(R.id.btnMyQr).setOnClickListener {
+            startActivity(Intent(this, MyQrActivity::class.java))
+        }
+
+        findViewById<TextView>(R.id.btnAddFriend).setOnClickListener {
+            startActivity(Intent(this, AddFriendActivity::class.java))
+        }
+
+        // SMS Banner
+        val smsBanner = findViewById<LinearLayout>(R.id.smsBanner)
+        smsBanner.setOnClickListener { requestSmsRole() }
+
+        updateBanner()
+
+        // App kholte hi maango agar default SMS app nahi hai
+        if (!isDefaultSmsApp()) {
+            requestSmsRole()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateBanner()
+        loadChats()
+    }
+
+    private fun loadChats() {
+        // Friends load karo
+        val friends = FriendStore.getAllFriends(this)
+
+        // Dummy data sirf tab jab koi friend nahi hai
+        if (friends.isEmpty() && MessageStore.chats.isEmpty()) {
             MessageStore.chats.addAll(
                 listOf(
                     Chat("rahul_123", "Rahul Sharma", "9876543210", "Bhai kal milte hain", "10:45", 2),
@@ -32,6 +65,10 @@ class MainActivity : AppCompatActivity() {
                     Chat("amit_k", "Amit Kumar", "9876543212", "Photo bhej dena", "Yesterday", 1)
                 )
             )
+        } else if (friends.isNotEmpty()) {
+            // Real friends show karo
+            MessageStore.chats.clear()
+            MessageStore.chats.addAll(friends)
         }
 
         val chatList = findViewById<RecyclerView>(R.id.chatList)
@@ -43,21 +80,6 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("chatPhone", chat.phone)
             startActivity(intent)
         }
-
-        val smsBanner = findViewById<LinearLayout>(R.id.smsBanner)
-        smsBanner.setOnClickListener { requestSmsRole() }
-
-        updateBanner()
-
-        // App kholte hi maango
-        if (!isDefaultSmsApp()) {
-            requestSmsRole()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        updateBanner()
     }
 
     private fun updateBanner() {
@@ -87,7 +109,6 @@ class MainActivity : AppCompatActivity() {
                         val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
                         startActivityForResult(intent, SMS_ROLE_CODE)
                     } catch (e: Exception) {
-                        // Agar RoleManager fail ho jaye toh Settings kholo
                         openDefaultAppsSettings()
                     }
                 }
@@ -105,23 +126,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Direct Settings kholo — 100% kaam karega
     private fun openDefaultAppsSettings() {
         try {
             val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
             startActivity(intent)
-            Toast.makeText(
-                this,
-                "World Clock ko SMS app me set karo",
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(this, "World Clock ko SMS app me set karo", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            // Aur bhi fallback
             try {
-                val intent = Intent(Settings.ACTION_SETTINGS)
-                startActivity(intent)
+                startActivity(Intent(Settings.ACTION_SETTINGS))
             } catch (e2: Exception) {
-                Toast.makeText(this, "Settings manually kholo → Apps → Default apps → SMS", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Settings → Apps → Default apps → SMS", Toast.LENGTH_LONG).show()
             }
         }
     }
