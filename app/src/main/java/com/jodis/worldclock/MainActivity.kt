@@ -1,5 +1,6 @@
 package com.jodis.worldclock
 
+import android.app.AlertDialog
 import android.app.role.RoleManager
 import android.content.Intent
 import android.os.Build
@@ -21,11 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Header name
         val headerName = findViewById<TextView>(R.id.headerName)
         headerName.text = UserData.getDisplayName(this)
 
-        // Buttons
         findViewById<TextView>(R.id.btnMyQr).setOnClickListener {
             startActivity(Intent(this, MyQrActivity::class.java))
         }
@@ -34,15 +33,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, AddFriendActivity::class.java))
         }
 
-        // SMS Banner
         val smsBanner = findViewById<LinearLayout>(R.id.smsBanner)
-        smsBanner.setOnClickListener { requestSmsRole() }
+        smsBanner.setOnClickListener { showDefaultAppDialog() }
 
         updateBanner()
 
-        // App kholte hi maango agar default SMS app nahi hai
+        // App kholte hi dialog dikhao agar default SMS app nahi hai
         if (!isDefaultSmsApp()) {
-            requestSmsRole()
+            showDefaultAppDialog()
         }
     }
 
@@ -53,10 +51,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadChats() {
-        // Friends load karo
         val friends = FriendStore.getAllFriends(this)
 
-        // Dummy data sirf tab jab koi friend nahi hai
         if (friends.isEmpty() && MessageStore.chats.isEmpty()) {
             MessageStore.chats.addAll(
                 listOf(
@@ -66,7 +62,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         } else if (friends.isNotEmpty()) {
-            // Real friends show karo
             MessageStore.chats.clear()
             MessageStore.chats.addAll(friends)
         }
@@ -100,6 +95,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Truecaller jaisa popup
+    private fun showDefaultAppDialog() {
+        if (isDefaultSmsApp()) return
+
+        AlertDialog.Builder(this)
+            .setTitle("SMS Permission Chahiye")
+            .setMessage("World Clock ko default SMS app banana padega taaki aapke messages yahin aayein, Google Messages me na jayein. Settings kholu?")
+            .setCancelable(false)
+            .setPositiveButton("Settings Kholo") { _, _ ->
+                requestSmsRole()
+            }
+            .setNegativeButton("Baad Me") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     private fun requestSmsRole() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val roleManager = getSystemService(RoleManager::class.java)
@@ -130,7 +142,7 @@ class MainActivity : AppCompatActivity() {
         try {
             val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
             startActivity(intent)
-            Toast.makeText(this, "World Clock ko SMS app me set karo", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "SMS app me World Clock select karo", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             try {
                 startActivity(Intent(Settings.ACTION_SETTINGS))
