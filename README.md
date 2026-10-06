@@ -1,4 +1,3 @@
 # world-clock
 A simple world clock App
-Devloper name Satyarthofc
-
+Devloper name Satyarth
