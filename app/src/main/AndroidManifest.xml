@@ -1,101 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/chat_bg"
-    android:orientation="vertical">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Header -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/header_bg"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.WorldClock">
 
-            <TextView
-                android:id="@+id/headerName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Satyarth"
-                android:textColor="@color/text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
+        <activity
+            android:name=".ClockActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="online"
-                android:textColor="@color/accent_green"
-                android:textSize="12sp"
-                android:layout_marginTop="2dp"/>
-        </LinearLayout>
+        <activity
+            android:name=".PinLockActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SetupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyQrActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddFriendActivity"
+            android:exported="false" />
 
-        <TextView
-            android:id="@+id/btnMyQr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MY QR"
-            android:textColor="@color/accent_green"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true"/>
+        <receiver
+            android:name=".SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
 
-        <TextView
-            android:id="@+id/btnAddFriend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="+ ADD"
-            android:textColor="@color/accent_green"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true"/>
-    </LinearLayout>
-
-    <!-- SMS Permission Banner -->
-    <LinearLayout
-        android:id="@+id/smsBanner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FF6B35"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Tap karo chat enable karne ke liye"
-            android:textColor="#FFFFFF"
-            android:textSize="13sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ENABLE →"
-            android:textColor="#FFFFFF"
-            android:textSize="13sp"
-            android:textStyle="bold"/>
-    </LinearLayout>
-
-    <!-- Chat List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="4dp"/>
-
-</LinearLayout>
+    </application>
+</manifest>
