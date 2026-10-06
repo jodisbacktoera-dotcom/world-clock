@@ -66,9 +66,13 @@ class MyQrActivity : AppCompatActivity() {
                     put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
                 }
                 uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                
+                // 🛠️ FIX YAHAN HAI
                 val outputStream: OutputStream? = uri?.let { contentResolver.openOutputStream(it) }
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream?.close()
+                outputStream?.use { stream ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                }
+                
             } else {
                 val path = MediaStore.Images.Media.insertImage(
                     contentResolver, bitmap, filename, "World Clock QR"
